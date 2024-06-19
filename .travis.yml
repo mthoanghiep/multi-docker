@@ -1,0 +1,25 @@
+sudo: required
+services:
+    - docker
+    
+before_install:
+    - docker build -t michaeln2016/react-test -f ./client/Dockerfile.dev ./client
+script:
+    - docker run -e CI=true michaeln2016/react-test npm test
+
+after_success:
+    - docker build -t michaeln2016/multi-client ./client
+    - docker build -t michaeln2016/multi-nginx ./nginx
+    - docker build -t michaeln2016/multi-server ./server
+    - docker build -t michaeln2016/multi-worker ./worker
+# deploy:
+    # provider: elasticbeanstalk
+    # region: "us-east-1"
+    # app: "frontend"
+    # env: "Frontend-env"
+    # bucket_name: "elasticbeanstalk-us-east-1-058264145859"
+    # bucket_path: "frontend"
+    # on:
+        # branch: master
+    # access_key_id: $AWS_ACCESS_KEY
+    # secret_access_key: "$AWS_SECRET_KEY"
